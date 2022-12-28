@@ -11,7 +11,13 @@ v1b2p4x8 = [
     [7,7,6,6,6,6,4,4],
     [7,7,6,8,8,6,6,6]
 ]
-mapsize = 8
+
+easyclamp = [
+    [1,1,2,2,],
+    [1,1,2,2,],
+    [3,3,0,0,],
+    [3,3,0,0,],
+]
 
 blanklol = [
     [' ', ' ', ' ', ' ', ' ',' ',' ',' '],
@@ -32,7 +38,7 @@ def blankmap(size):
         lol += [helper]
     return lol
 
-def validsolution(areas, starmap):
+def validsolution(areas, starmap, areacount):
     starmapsize = len(starmap)
     # check no Xs next to each other
     for row in range(starmapsize):
@@ -66,7 +72,7 @@ def validsolution(areas, starmap):
         if colcount != 1: return False
 
     # check if every area has exactly 1 X
-    for areaindex in range(mapsize):
+    for areaindex in range(areacount):
         count = 0
         for row in range(starmapsize):
             for col in range(starmapsize):
@@ -74,6 +80,7 @@ def validsolution(areas, starmap):
                     count += 1
         if count != 1:
             return False
+
     return True
 
 def checkvalid(starmap):
@@ -147,21 +154,26 @@ def backtonotstar(starmap):
     return starmap
 
 
-def recursivesolver(areas, starmap):
-    for row in starmap:
-        print(row)
-    print('')
-    if checkfull(starmap) and validsolution(v1b2p4x8, starmap):
-        print('valid')
+def recursivesolver(areas, starmap, areacount, debug=False):
+    if debug:
         for row in starmap:
             print(row)
-        print('valid')
-        return True
+        print('')
+    if checkfull(starmap):
+        if validsolution(v1b2p4x8, starmap, areacount):
+            print('valid')
+            for row in starmap:
+                print(row)
+            print('valid')
+            a = input('> ')
+            return True
+        else:
+            return False
     elif not checkvalid(starmap):
-        print('invalid')
+        # print('invalid')
         return False
     else:
-        recursivesolver(areas, addsymbol(starmap, 'X'))
-        recursivesolver(areas, addsymbol(starmap, '-'))
+        recursivesolver(areas, addsymbol(starmap, 'X'), areacount, debug)
+        recursivesolver(areas, addsymbol(starmap, '-'), areacount, debug)
 
-recursivesolver(v1b2p4x8, blanklol)
+# recursivesolver(v1b2p4x8, blanklol)
