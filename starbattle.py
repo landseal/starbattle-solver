@@ -7,13 +7,14 @@ arealist = [
 ]
 mapsize = 5
 
-blanklol = [
-    [' ', ' ', ' ', ' ', ' ',],
-    [' ', ' ', ' ', ' ', ' ',],
-    [' ', ' ', ' ', ' ', ' ',],
-    [' ', ' ', ' ', ' ', ' ',],
-    [' ', ' ', ' ', ' ', ' ',],
-]
+def blankmap(size):
+    lol = []
+    for row in range(size):
+        helper = []
+        for col in range(size):
+            helper += [' ']
+        lol += [helper]
+    return lol
 
 def checkvalid(areas, starmap):
     starmapsize = len(starmap)
@@ -93,4 +94,4 @@ def recursivesolver(areas, starmap):
         recursivesolver(areas, addsymbol(starmap, '-'))
         recursivesolver(areas, addsymbol(starmap, 'X'))
 
-recursivesolver(arealist, blanklol)
+recursivesolver(arealist, blankmap(5))
