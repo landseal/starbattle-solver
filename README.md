@@ -1,0 +1,3 @@
+# starbattle-solver
+
+Starbattle solver
