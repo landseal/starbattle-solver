@@ -1,4 +1,5 @@
 import copy
+import time
 
 #
 v1b2p4x8 = [
@@ -9,7 +10,20 @@ v1b2p4x8 = [
     [1,5,6,3,6,4,4,4],
     [7,7,6,6,6,4,4,4],
     [7,7,6,6,6,6,4,4],
-    [7,7,6,8,8,6,6,6]
+    [7,7,6,0,0,6,6,6]
+]
+
+v1b1p1x10 = [
+    [0,0,0,0,0,0,0,0,1,1],
+    [0,0,0,0,0,0,2,0,1,1],
+    [3,4,4,4,0,2,2,2,1,1],
+    [3,3,3,3,5,6,6,2,1,1],
+    [3,3,3,5,5,5,6,6,1,1],
+    [3,3,7,5,5,5,6,6,1,1],
+    [3,3,7,7,7,6,6,6,8,1],
+    [3,3,3,3,3,3,6,6,8,1],
+    [3,9,9,9,9,9,9,9,8,8],
+    [9,9,9,9,9,9,9,9,9,8]
 ]
 
 easyclamp = [
@@ -17,6 +31,22 @@ easyclamp = [
     [1,1,2,2,],
     [3,3,0,0,],
     [3,3,0,0,],
+]
+
+sixclamp = [
+    [1,1,1,1,2,2,],
+    [1,1,3,3,2,2,],
+    [1,1,3,3,3,3,],
+    [1,1,3,3,4,4,],
+    [5,0,0,4,4,4,],
+    [5,0,0,0,4,4,],
+]
+
+easyclampanswer = [
+    ['-','X','-','-'],
+    ['-','-','-','X'],
+    ['X','-','-','-'],
+    ['-','-','X','-'],
 ]
 
 blanklol = [
@@ -38,7 +68,7 @@ def blankmap(size):
         lol += [helper]
     return lol
 
-def validsolution(areas, starmap, areacount):
+def validsolution(areas, starmap, areacount, starcount):
     starmapsize = len(starmap)
     # check no Xs next to each other
     for row in range(starmapsize):
@@ -57,33 +87,33 @@ def validsolution(areas, starmap, areacount):
                     # check square below and left
                     if starmap[row+1][col-1] == 'X': return False
     
-    # check that every column and row has exactly 1 X
+    # check that every column and row has exactly starcount Xs
     for row in range(starmapsize):
         rowcount = 0
         for col in range(starmapsize):
             if starmap[row][col] == 'X':
                 rowcount += 1
-        if rowcount != 1: return False
+        if rowcount != starcount: return False
     for col in range(starmapsize):
         colcount = 0
         for row in range(starmapsize):
             if starmap[row][col] == 'X':
                 colcount += 1
-        if colcount != 1: return False
+        if colcount != starcount: return False
 
-    # check if every area has exactly 1 X
+    # check if every area has exactly starcount Xs
     for areaindex in range(areacount):
         count = 0
         for row in range(starmapsize):
             for col in range(starmapsize):
                 if areas[row][col] == areaindex and starmap[row][col] == 'X':
                     count += 1
-        if count != 1:
+        if count != starcount:
             return False
 
     return True
 
-def checkvalid(starmap):
+def checkvalid(starmap, starcount):
     starmapsize = len(starmap)
     starmaprange = range(starmapsize)
     # check no Xs next to each other
@@ -110,13 +140,13 @@ def checkvalid(starmap):
         for col in starmaprange:
             if starmap[row][col] == 'X':
                 rowcount += 1
-        if rowcount > 1: return False
+        if rowcount > starcount: return False
     for col in starmaprange:
         colcount = 0
         for row in starmaprange:
             if starmap[row][col] == 'X':
                 colcount += 1
-        if colcount > 1: return False
+        if colcount > starcount: return False
     return True
                     
 
@@ -154,26 +184,40 @@ def backtonotstar(starmap):
     return starmap
 
 
-def recursivesolver(areas, starmap, areacount, debug=False):
+def recursivesolver(areas, starmap, starcount, debug=False):
     if debug:
         for row in starmap:
             print(row)
         print('')
     if checkfull(starmap):
-        if validsolution(v1b2p4x8, starmap, areacount):
+        if validsolution(areas, starmap, len(starmap), starcount):
             print('valid')
             for row in starmap:
                 print(row)
             print('valid')
-            a = input('> ')
+            # a = input('> ')
             return True
         else:
             return False
-    elif not checkvalid(starmap):
+    elif not checkvalid(starmap, starcount):
         # print('invalid')
         return False
     else:
-        recursivesolver(areas, addsymbol(starmap, 'X'), areacount, debug)
-        recursivesolver(areas, addsymbol(starmap, '-'), areacount, debug)
+        recursivesolver(areas, addsymbol(starmap, 'X'), starcount, debug)
+        recursivesolver(areas, addsymbol(starmap, '-'), starcount, debug)
 
-# recursivesolver(v1b2p4x8, blanklol)
+def starbattlesolver(areas, starcount=0, debug=False):
+    if starcount == 0:
+        if len(areas) < 10:
+            starcount = 1
+        elif len(areas) < 14:
+            starcount = 2
+        else:
+            starcount = 3
+    print(starcount)
+    areacount = len(areas)*starcount
+    starttime = time.time()
+    recursivesolver(areas, blankmap(len(areas)), starcount)
+    # recursivesolver(v1b2p4x8, blankmap(8), 1)
+    # recursivesolver(easyclamp, blankmap(4), 4, 1)
+    print('elapsed time is', time.time()-starttime, 's')
