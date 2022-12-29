@@ -166,6 +166,42 @@ def addsymbol(starmap, symbol):
                 copymap[row][col] = symbol
                 return copymap
 
+def smartaddstar(starmap, symbol='X'):
+    copymap = copy.deepcopy(starmap)
+    starmapsize = len(starmap)
+    starmaprange = range(starmapsize)
+    for row in starmaprange:
+        for col in starmaprange:
+            if starmap[row][col] == ' ':
+                copymap[row][col] = 'X'
+                # set row to -
+                for i in starmaprange:
+                    if copymap[row][i] == ' ': copymap[row][i] = '-'
+                # set col to -
+                for i in starmaprange:
+                    if copymap[i][col] == ' ': copymap[i][col] = '-'
+                # set around to -
+                if row != 0:
+                    if copymap[row-1][col] == ' ': copymap[row-1][col]='-'
+                    if col != 0:
+                        if copymap[row-1][col-1] == ' ': copymap[row-1][col-1] = '-'
+                    if col != starmapsize-1:
+                        if copymap[row-1][col+1] == ' ': copymap[row-1][col+1] = '-'
+                if row != starmapsize-1:
+                    if copymap[row+1][col] == ' ': copymap[row+1][col] = '-'
+                    if col != 0:
+                        if copymap[row+1][col-1] == ' ': copymap[row+1][col-1] = '-'
+                    if col != starmapsize-1:
+                        if copymap[row+1][col+1] == ' ': copymap[row+1][col+1] = '-'
+                if col != 0:
+                    if copymap[row][col-1] == ' ': copymap[row][col-1] = '-'
+                if col != starmapsize-1:
+                    if copymap[row][col+1] == ' ': copymap[row][col+1] = '-'
+                # set area to -
+                
+
+                return copymap
+
 def backtonotstar(starmap):
     starmapsize = len(starmap)
     starmaprange = range(starmapsize)
@@ -203,7 +239,8 @@ def recursivesolver(areas, starmap, starcount, debug=False):
         # print('invalid')
         return False
     else:
-        recursivesolver(areas, addsymbol(starmap, 'X'), starcount, debug)
+        # recursivesolver(areas, addsymbol(starmap, 'X'), starcount, debug)
+        recursivesolver(areas, smartaddstar(starmap), starcount, debug)
         recursivesolver(areas, addsymbol(starmap, '-'), starcount, debug)
 
 def starbattlesolver(areas, starcount=0, debug=False):
@@ -218,6 +255,4 @@ def starbattlesolver(areas, starcount=0, debug=False):
     areacount = len(areas)*starcount
     starttime = time.time()
     recursivesolver(areas, blankmap(len(areas)), starcount)
-    # recursivesolver(v1b2p4x8, blankmap(8), 1)
-    # recursivesolver(easyclamp, blankmap(4), 4, 1)
     print('elapsed time is', time.time()-starttime, 's')
