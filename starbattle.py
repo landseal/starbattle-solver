@@ -321,6 +321,7 @@ def orderbyareasize(areas):
                     orderedcoordinatelist += [[row, col]]
     return orderedcoordinatelist
 
+# I should comment my code so people understand
 def recursivesolver(areas, starmap, starcount, orderedcoordinates, debug=False):
     global recursivecounter
     recursivecounter += 1
